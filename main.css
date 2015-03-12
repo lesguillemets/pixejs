@@ -36,66 +36,66 @@ div.selected {
 /* colors {{{ */
 
 #color00{
-    background-color: rgb(0,0,0);
+    background-color: #000000;
 }
 
 #color01{
-    background-color: rgb(255,0,0);
+    background-color: #484848;
 }
 
 #color02{
-    background-color: rgb(0,255,0);
+    background-color: #b8b8b8;
 }
 
 #color03{
-    background-color: rgb(255,255,0);
+    background-color: #f8f8f8;
 }
 
 #color04{
-    background-color: rgb(0,0,255);
+    background-color: #c11;
 }
 
 #color05{
-    background-color: rgb(255,0,255);
+    background-color: #f81;
 }
 
 #color06{
-    background-color: rgb(0,255,255);
+    background-color: #ee2;
 }
 
 #color07{
-    background-color: rgb(255,255,255)
+    background-color: #291;
 }
 
 #color08{
-    background-color: rgb(128,128,128);
+    background-color: #087;
 }
 
 #color09{
-    background-color: rgb(128,0,0);
+    background-color: #07f;
 }
 
 #color10{
-    background-color: rgb(0,128,0);
+    background-color: #14b;
 }
 
 #color11{
-    background-color: rgb(128,128,0);
+    background-color: #92b;
 }
 
 #color12{
-    background-color: rgb(0,0,128);
+    background-color: #941;
 }
 
 #color13{
-    background-color: rgb(128,0,128);
+    background-color: #fcb;
 }
 
 #color14{
-    background-color: rgb(0,128,128);
+    background-color: #f9b;
 }
 
 #color15{
-    background-color: rgb(192,192,192);
+    background-color: #a94;
 }
 /* }}} */
