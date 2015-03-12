@@ -1,2 +1,3 @@
 *.hs
 *.o
+./build/main.js
