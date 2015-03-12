@@ -1,0 +1,101 @@
+canvas {
+    border: 1px solid rgba(100,100,100,0.5);
+}
+
+div.container {
+    width:300px;
+    text-align:center;
+    margin-left:auto;
+    margin-right:auto;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+div.colorbox {
+    border: 2px solid white;
+    width:50px;
+    height:50px;
+    display: inline-block;
+    margin: 5px;
+}
+
+div.colorbox:hover{
+    border: none;
+    padding:2px;
+}
+
+div.selected {
+    border: 2px solid red;
+}
+
+
+/* colors {{{ */
+
+#color00{
+    background-color: rgb(0,0,0);
+}
+
+#color01{
+    background-color: rgb(255,0,0);
+}
+
+#color02{
+    background-color: rgb(0,255,0);
+}
+
+#color03{
+    background-color: rgb(255,255,0);
+}
+
+#color04{
+    background-color: rgb(0,0,255);
+}
+
+#color05{
+    background-color: rgb(255,0,255);
+}
+
+#color06{
+    background-color: rgb(0,255,255);
+}
+
+#color07{
+    background-color: rgb(255,255,255)
+}
+
+#color08{
+    background-color: rgb(128,128,128);
+}
+
+#color09{
+    background-color: rgb(128,0,0);
+}
+
+#color10{
+    background-color: rgb(0,128,0);
+}
+
+#color11{
+    background-color: rgb(128,128,0);
+}
+
+#color12{
+    background-color: rgb(0,0,128);
+}
+
+#color13{
+    background-color: rgb(128,0,128);
+}
+
+#color14{
+    background-color: rgb(0,128,128);
+}
+
+#color15{
+    background-color: rgb(192,192,192);
+}
+/* }}} */
