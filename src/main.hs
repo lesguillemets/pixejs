@@ -5,6 +5,8 @@ import Data.IORef
 import Data.Array
 import Data.Array.MArray
 import Data.Array.IO
+import Data.Maybe
+import Text.Printf
 
 colors = [
          "#f8f8f8", "#b8b8b8", "#484848", "#000000",
@@ -27,9 +29,18 @@ setUp env = do
 
 onBoxClick :: IORef Brush -> (Elem, Int) -> Int -> (Int,Int) -> IO ()
 onBoxClick brush (elm,n) = \ _ _ -> do
+    getBrushDOM brush >>=
+        (\e -> setStyle e "border-color" "white") . fromJust
     newcolor <- getStyle elm "background-color"
     modifyIORef brush (setBrush newcolor n)
     readIORef brush >>= putStrLn . (++ " on " ++ (show n)) . show
+    getBrushDOM brush >>=
+        (\e -> setStyle e "border-color" "black") . fromJust
+
+toID :: Int -> ElemID
+toID = ("color" ++ ) . printf "%02d"
+getBrushDOM :: (IORef Brush) -> IO (Maybe Elem)
+getBrushDOM b = readIORef b >>= elemById . toID . _cid
 
 setBrush :: String -> Int -> Brush -> Brush
 setBrush c n b = b { _color = c, _cid = n}
