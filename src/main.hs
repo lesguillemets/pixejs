@@ -8,16 +8,34 @@ import Data.Array.IO
 import Data.Maybe
 import Text.Printf
 
+-- globals {{{
+pixSize :: Int
+pixSize = 10
+pixs :: Int
+pixs = 25
+
 colors = [
          "#f8f8f8", "#b8b8b8", "#484848", "#000000",
          "#c11", "#f81", "#ee2", "#291",
          "#087", "#07f", "#14b", "#92b",
          "#941", "#fcb", "#f9b", "#a94"
          ]
+-- }}}
 
-square' :: Shape ()
-square' = do
-    mapM_ (\n -> let n' = 10*n in rect (n',n') (n'+10,n'+10)) [0..25]
+drawAt :: Env -> (Int,Int) -> IO ()
+drawAt e loc@(x,y) = do
+    brush <- readIORef (_brush e)
+    writeArray (_data e) loc (_cid brush)
+    render (_canv e) $
+        translate (pixSize * fromIntegral x, pixSize * fromIntegral y)
+        . color (readColor (_color  brush)) $ square
+
+square :: Picture ()
+square = fill $ rect (0,0) (fromIntegral pixSize, fromIntegral pixSize)
+
+readColor :: String -> Color
+readColor ns = let (r,g,b) = read $ dropWhile (/= '(') ns in
+    RGB r g b
 
 setUp :: Env -> IO ()
 setUp env = do
@@ -45,7 +63,7 @@ onBoxClick brush (elm,n) = \ _ _ -> do
 
 toID :: Int -> ElemID
 toID = ("color" ++ ) . printf "%02d"
-getBrushDOM :: (IORef Brush) -> IO (Maybe Elem)
+getBrushDOM :: IORef Brush -> IO (Maybe Elem)
 getBrushDOM b = readIORef b >>= elemById . toID . _cid
 
 setBrush :: String -> Int -> Brush -> Brush
@@ -54,13 +72,12 @@ setBrush c n b = b { _color = c, _cid = n}
 main = do
     Just canv <- getCanvasById "canv"
     b <- newIORef $ Brush (head colors) 0
-    arr <- newArray (0,25) 0 :: IO (IOArray Int Int)
-    let env = Env b arr
+    arr <- newArray ((0,0),(pixs,pixs)) 0 :: IO Pixels
+    let env = Env b arr canv
     setUp env
     alert "Hi there!"
-    render canv $ do
-        color (RGB 234 234 52) . fill $ square'
+    render canv $ color (RGB 234 234 52) square
 
 data Brush = Brush { _color :: String , _cid :: Int} deriving (Show)
-type Pixels = IOArray Int Int
-data Env = Env {_brush :: IORef Brush , _pixs :: Pixels}
+type Pixels = IOArray (Int,Int) Int
+data Env = Env {_brush :: IORef Brush , _data :: Pixels, _canv :: Canvas}
