@@ -29,7 +29,7 @@ drawAt e loc@(x,y) = do
     brush <- readIORef (_brush e)
     writeArray (_data e) loc (_cid brush)
     render (_canv e) $
-        translate (pixSize * fromIntegral x, pixSize * fromIntegral y)
+        translate (fromIntegral (pixSize * x), fromIntegral (pixSize * y))
         . color (readColor (_color  brush)) $ square
 
 -- a square that corresponds to one pixel.
