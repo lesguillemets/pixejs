@@ -22,18 +22,24 @@ square' = do
 setUp :: Env -> IO ()
 setUp env = do
     let brush = _brush env
+    -- setup onclick colorboxes
     colorboxes <- elemsByClass "colorbox"
+    -- fill each box with its corresponding color.
     mapM_ (\(e,c) -> setStyle e "background-color" c) $ zip colorboxes colors
+    -- when click on that element..
     mapM_ (\(e,i) -> (onEvent e OnClick (onBoxClick brush (e,i)))
           ) (zip colorboxes [0..])
 
 onBoxClick :: IORef Brush -> (Elem, Int) -> Int -> (Int,Int) -> IO ()
 onBoxClick brush (elm,n) = \ _ _ -> do
+    -- clear previously selected box
     getBrushDOM brush >>=
         (\e -> setStyle e "border-color" "white") . fromJust
     newcolor <- getStyle elm "background-color"
+    -- now we have the brush with new color.
     modifyIORef brush (setBrush newcolor n)
-    readIORef brush >>= putStrLn . (++ " on " ++ (show n)) . show
+    readIORef brush >>= putStrLn . (++ " on " ++ (show n)) . show -- log
+    -- highlight current color.
     getBrushDOM brush >>=
         (\e -> setStyle e "border-color" "black") . fromJust
 
