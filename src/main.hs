@@ -28,7 +28,7 @@ drawAt :: Env -> (Int,Int) -> IO ()
 drawAt e loc@(x,y) = do
     brush <- readIORef (_brush e)
     writeArray (_data e) loc (_cid brush)
-    render (_canv e) $
+    renderOnTop (_canv e) $
         translate (fromIntegral (pixSize * x), fromIntegral (pixSize * y))
         . color (readColor (_color  brush)) $ square
 
@@ -51,6 +51,10 @@ setUp env = do
     -- when click on that element..
     mapM_ (\(e,i) -> (onEvent e OnClick (onBoxClick brush (e,i)))
           ) (zip colorboxes [0..])
+    
+    -- setup canvas
+    onEvent (canvasElem (_canv env)) OnClick (onCanvClick env)
+    putStrLn "ready."
 
 onBoxClick :: IORef Brush -> (Elem, Int) -> Int -> (Int,Int) -> IO ()
 onBoxClick brush (elm,n) = \ _ _ -> do
@@ -60,10 +64,15 @@ onBoxClick brush (elm,n) = \ _ _ -> do
     newcolor <- getStyle elm "background-color"
     -- now we have the brush with new color.
     modifyIORef brush (setBrush newcolor n)
-    readIORef brush >>= putStrLn . (++ " on " ++ (show n)) . show -- log
+    -- readIORef brush >>= putStrLn . (++ " on " ++ (show n)) . show
     -- highlight current color.
     getBrushDOM brush >>=
         (\e -> setStyle e "border-color" "black") . fromJust
+
+onCanvClick :: Env -> Int -> (Int,Int) -> IO ()
+onCanvClick e = \ _ (x,y) -> let pos = (x `div` pixSize, y `div` pixSize)
+        in
+            drawAt e pos
 
 toID :: Int -> ElemID
 toID = ("color" ++ ) . printf "%02d"
