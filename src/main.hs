@@ -1,12 +1,15 @@
 import Haste
 import Haste.DOM
 import Haste.Graphics.Canvas
+import Haste.Foreign (ffi)
+import Haste.Prim (toJSStr)
 import Data.IORef
 import Data.Array
 import Data.Array.MArray
 import Data.Array.IO
 import Data.Char
 import Data.Maybe
+import Data.List
 import Control.Monad
 import Numeric
 import Text.Printf
@@ -17,7 +20,7 @@ pixSize = 10
 pixs :: Int
 pixs = 18
 
-baseURL = "http://lesguillemets.github.io/pixejs/?"
+baseURL = "http://lesguillemets.github.io/pixejs?"
 version = "0"
 
 colors = [
@@ -117,6 +120,7 @@ main = do
     arr <- newArray ((0,0),(pixs-1,pixs-1)) 0 :: IO Pixels
     let env = Env b arr canv
     setUp env
+    getQStr >>= initWithQuery env
 
 data Brush = Brush { _color :: String , _cid :: Int} deriving (Show)
 type Pixels = IOArray (Int,Int) Int
@@ -131,8 +135,10 @@ data Env = Env {_brush :: IORef Brush , _data :: Pixels, _canv :: Canvas}
 mkURL :: Env -> IO ()
 mkURL e = do
     s <- toDataString (_data e)
-    Just txtArea <- elemById "dat"
-    setProp txtArea "innerHTML" s
+    Just datArea <- elemById "dat"
+    setProp datArea "innerHTML" s
+    Just urlArea <- elemById "shareurl"
+    setProp urlArea "innerHTML" (toFullURL s)
 
 toFullURL :: String -> String
 toFullURL dat = baseURL ++ "d=" ++ dat ++ "&v=" ++ version
@@ -167,3 +173,35 @@ cpPixels p0 p1 = do
         forM_ [y0..y1] $ \y ->
             readArray p0 (x,y) >>= writeArray p1 (x,y)
 -- FIXME :: Too far a workaround
+
+--- read query
+getQStr :: IO String
+getQStr = ffi $ toJSStr "(function(){ return window.location.search; })"
+
+init :: Env -> IO ()
+init e = do
+    qs <- getQStr
+    case qs of
+        "" -> return ()
+        q -> initWithQuery e q
+
+initWithQuery :: Env -> String -> IO()
+initWithQuery e qs = let
+    queries = parseQuery (tail qs)
+    dat = find ((== "d") . fst) queries
+    in
+        case dat of
+            Nothing -> return ()
+            (Just d) -> readData e (snd d)
+
+parseQuery :: String -> [(String,String)]
+parseQuery = map (cutWith '=') . splitWith '&'
+
+splitWith :: Char -> String -> [String]
+splitWith c str = let
+    (pre,post) = span (/= c) str
+    in
+        pre : splitWith c (tail post)
+
+cutWith :: Char -> String -> (String, String)
+cutWith c s = let (pre,post) = span (/= c) s in (pre, tail post)
