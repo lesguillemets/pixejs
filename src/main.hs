@@ -15,7 +15,7 @@ import Text.Printf
 pixSize :: Int
 pixSize = 10
 pixs :: Int
-pixs = 25
+pixs = 18
 
 baseURL = "http://lesguillemets.github.io/pixejs/?"
 version = "0"
