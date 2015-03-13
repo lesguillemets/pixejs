@@ -22,6 +22,8 @@ colors = [
          ]
 -- }}}
 
+-- draw pixel at (x,y).
+-- also updates the inner data.
 drawAt :: Env -> (Int,Int) -> IO ()
 drawAt e loc@(x,y) = do
     brush <- readIORef (_brush e)
@@ -30,9 +32,11 @@ drawAt e loc@(x,y) = do
         translate (pixSize * fromIntegral x, pixSize * fromIntegral y)
         . color (readColor (_color  brush)) $ square
 
+-- a square that corresponds to one pixel.
 square :: Picture ()
 square = fill $ rect (0,0) (fromIntegral pixSize, fromIntegral pixSize)
 
+-- js string to Color. "rgb(r,g,b)" -> RGB r g b
 readColor :: String -> Color
 readColor ns = let (r,g,b) = read $ dropWhile (/= '(') ns in
     RGB r g b
@@ -80,4 +84,8 @@ main = do
 
 data Brush = Brush { _color :: String , _cid :: Int} deriving (Show)
 type Pixels = IOArray (Int,Int) Int
+-- environment.
+-- _brush : Currently used brush,
+-- _data : pixels
+-- _canv : canvas to draw on
 data Env = Env {_brush :: IORef Brush , _data :: Pixels, _canv :: Canvas}
