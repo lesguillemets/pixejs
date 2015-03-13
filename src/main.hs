@@ -88,8 +88,6 @@ main = do
     arr <- newArray ((0,0),(pixs,pixs)) 0 :: IO Pixels
     let env = Env b arr canv
     setUp env
-    alert "Hi there!"
-    render canv $ color (RGB 234 234 52) square
 
 data Brush = Brush { _color :: String , _cid :: Int} deriving (Show)
 type Pixels = IOArray (Int,Int) Int
