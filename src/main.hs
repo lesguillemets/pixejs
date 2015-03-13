@@ -7,7 +7,7 @@ import Data.Array.MArray
 import Data.Array.IO
 
 colors = [
-         "#000000", "#484848", "#b8b8b8", "f8f8f8",
+         "#f8f8f8", "#b8b8b8", "#484848", "#000000",
          "#c11", "#f81", "#ee2", "#291",
          "#087", "#07f", "#14b", "#92b",
          "#941", "#fcb", "#f9b", "#a94"
@@ -15,7 +15,7 @@ colors = [
 
 square' :: Shape ()
 square' = do
-    rect (10,10) (20,20)
+    mapM_ (\n -> let n' = 10*n in rect (n',n') (n'+10,n'+10)) [0..25]
 
 setUp :: Env -> IO ()
 setUp env = do
@@ -37,7 +37,7 @@ setBrush c n b = b { _color = c, _cid = n}
 main = do
     Just canv <- getCanvasById "canv"
     b <- newIORef $ Brush (head colors) 0
-    arr <- newArray (0,10) 15 :: IO (IOArray Int Int)
+    arr <- newArray (0,25) 0 :: IO (IOArray Int Int)
     let env = Env b arr
     setUp env
     alert "Hi there!"
