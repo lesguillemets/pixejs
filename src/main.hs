@@ -21,7 +21,7 @@ pixs :: Int
 pixs = 18
 
 baseURL = "http://lesguillemets.github.io/pixejs?"
-version = "0"
+version = "1"
 
 colors = [
          "#f8f8f8", "#b8b8b8", "#484848", "#000000",
@@ -161,9 +161,9 @@ fromDataString :: String -> IO Pixels
 fromDataString c = newListArray ((0,0),(pixs-1,pixs-1)) (decode c)
 
 encode :: [Int] -> String
-encode = map (chr . (+) 97)
+encode = runLengthEncode
 decode :: String -> [Int]
-decode = map (subtract 97 . ord)
+decode = runLengthDecode
 
 cpPixels :: Pixels -> Pixels -> IO ()
 -- cp from to
@@ -205,3 +205,30 @@ splitWith c str = let
 
 cutWith :: Char -> String -> (String, String)
 cutWith c s = let (pre,post) = span (/= c) s in (pre, tail post)
+
+-- run-length encoding.
+-- a-z : data, A-Z : number.
+-- baBzC <-> baazzz
+encInt :: Int -> String
+encInt 1 = ""
+encInt n = map (chr . (+ 65) . snd)
+    . takeWhile (/= (0,0)) . tail $ iterate ((`divMod` 26) . fst) (n,0)
+
+decInt :: String -> Int
+decInt "" = 1
+decInt ss = sum . zipWith (*) (iterate (*26) 1) . map (subtract 65 . ord) $ ss
+
+toChar :: Int -> Char
+toChar = chr . (+97)
+fromChar :: Char -> Int
+fromChar = subtract 97 . ord
+
+runLengthEncode :: [Int] -> String
+runLengthEncode = concatMap (\(n,l) -> toChar n : encInt l)
+        . map (\ns -> (head ns, length ns)) . group
+runLengthDecode :: String -> [Int]
+runLengthDecode "" = []
+runLengthDecode (d:ds) =
+    let (num,rest) = break isLower ds
+        in
+            replicate (decInt num) (fromChar d) ++ runLengthDecode rest
